@@ -27,7 +27,7 @@ function ReviewList({ items, onRemove }) {
     <ul>
       {items.map((item) => {
         return (
-          <li>
+          <li key={item.id}>
             <ReviewListItem item={item} onRemove={onRemove} />
           </li>
         );
