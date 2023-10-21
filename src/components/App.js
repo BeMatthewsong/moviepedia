@@ -12,7 +12,6 @@ function App() {
   const [hasNext, setHasNext] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingError, setLoadingError] = useState(null);
-
   const sortedItems = items.sort((a, b) => b[order] - a[order]); // 별점순, 시간순
 
   const handleNewestClick = () => setOrder("createdAt");
@@ -47,13 +46,17 @@ function App() {
     handleLoad({ order, offset, limit: LIMIT });
   };
 
+  const handleSubmitSuccess = (review) => {
+    setItems((prevItems) => [review, ...prevItems]);
+  };
+
   useEffect(() => {
     handleLoad({ order, offset: 0, limit: LIMIT });
   }, [order]);
 
   return (
     <div>
-      <ReviewForm />
+      <ReviewForm onSubmitSuccess={handleSubmitSuccess} />
       <div>
         <button onClick={handleBestClick}>별점순</button>
         <button onClick={handleNewestClick}>최신순</button>

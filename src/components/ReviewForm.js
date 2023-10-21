@@ -2,14 +2,19 @@ import React, { useState } from "react";
 import "../styles/ReviewForm.css";
 import FileInput from "./FileInput";
 import RatingInput from "./RatingInput";
+import { createReview } from "../api";
 
-const ReviewForm = () => {
-  const [values, setValues] = useState({
-    title: "",
-    rating: 0,
-    content: "",
-    imgFile: null,
-  });
+const INITIAL_VALUES = {
+  title: "",
+  rating: 0,
+  content: "",
+  imgFile: null,
+};
+
+const ReviewForm = ({ onSubmitSuccess }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittingError, setSubmittingError] = useState(null);
+  const [values, setValues] = useState(INITIAL_VALUES);
 
   // 이미지 파일을 전달해주기 위해 인풋과 분리!
   const handleChange = (name, value) => {
@@ -24,8 +29,28 @@ const ReviewForm = () => {
     handleChange(name, value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const formData = new FormData();
+    formData.append("title", values.title);
+    formData.append("rating", values.rating);
+    formData.append("content", values.content);
+    formData.append("imgFile", values.imgFile);
+
+    let result;
+    try {
+      setSubmittingError(null);
+      setIsSubmitting(true);
+      result = await createReview(formData);
+    } catch (error) {
+      setSubmittingError(error);
+      return;
+    } finally {
+      setIsSubmitting(false);
+    }
+    const { review } = result;
+    onSubmitSuccess(review);
+    setValues(INITIAL_VALUES);
   };
 
   return (
@@ -42,9 +67,10 @@ const ReviewForm = () => {
         value={values.content}
         onChange={handleInputChange}
       />
-      <button type="submit" onSubmit={handleSubmit}>
+      <button type="submit" disabled={isSubmitting} onSubmit={handleSubmit}>
         제출하기
       </button>
+      {submittingError?.message && <div>{submittingError.message}</div>}
     </form>
   );
 };
