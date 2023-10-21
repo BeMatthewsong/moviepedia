@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ReviewList from "./ReviewList";
 import { getReviews } from "../api";
+import ReviewForm from "./ReviewForm";
 
 const LIMIT = 6;
 
@@ -52,6 +53,7 @@ function App() {
 
   return (
     <div>
+      <ReviewForm />
       <div>
         <button onClick={handleBestClick}>별점순</button>
         <button onClick={handleNewestClick}>최신순</button>
